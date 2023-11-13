@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {AuthService} from "../services/auth.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -10,7 +11,7 @@ import {AuthService} from "../services/auth.service";
 export class LoginComponent implements OnInit {
   formLogin!: FormGroup;
 
-  constructor(private fb : FormBuilder, private authService : AuthService) { }
+  constructor(private fb : FormBuilder, private authService : AuthService, private router : Router ) { }
 
   ngOnInit(): void {
     this.formLogin=this.fb.group({
@@ -26,6 +27,8 @@ export class LoginComponent implements OnInit {
     this.authService.login(username,pwd).subscribe({
       next : data => {
         console.log(data)
+        this.authService.loadProfile(data);
+        this.router.navigateByUrl("/admin")
       },
       error : err => {
         console.log(err);

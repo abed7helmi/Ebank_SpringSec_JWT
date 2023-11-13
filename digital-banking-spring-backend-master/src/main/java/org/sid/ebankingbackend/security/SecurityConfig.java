@@ -72,7 +72,7 @@ public class SecurityConfig {
                 .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // desactiver la protection csrf / une mesure de sécurité mise en place pour prévenir les attaques dans lesquelles un attaquant exploite la confiance d'un utilisateur authentifié afin d'induire ce dernier à effectuer involontairement des actions indésirables
                 .csrf(crsf-> crsf.disable())
-                .cors(Customizer.withDefaults()) // pour permettre a angular d'envoyer
+                .cors(Customizer.withDefaults()) // pour permettre a angular d'envoyer , appelle le bean en bas CORS
                 // authorize la rqt d'auth de n a pas avoir les login 'authentification
                 .authorizeHttpRequests(ar->ar.requestMatchers("/auth/login/**").permitAll())
                 // tt rqt necessite authentification
@@ -115,7 +115,7 @@ public class SecurityConfig {
 
     //pour permetre d'angular d'envoyer un rqt , en gros qui peut m'envoyer un rqt
     // gerer la partie cors
-    @Bean
+   @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("*");
