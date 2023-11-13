@@ -25,8 +25,12 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -68,6 +72,7 @@ public class SecurityConfig {
                 .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // desactiver la protection csrf / une mesure de sécurité mise en place pour prévenir les attaques dans lesquelles un attaquant exploite la confiance d'un utilisateur authentifié afin d'induire ce dernier à effectuer involontairement des actions indésirables
                 .csrf(crsf-> crsf.disable())
+                .cors(Customizer.withDefaults()) // pour permettre a angular d'envoyer
                 // authorize la rqt d'auth de n a pas avoir les login 'authentification
                 .authorizeHttpRequests(ar->ar.requestMatchers("/auth/login/**").permitAll())
                 // tt rqt necessite authentification
@@ -105,4 +110,21 @@ public class SecurityConfig {
         daoAuthenticationProvider.setUserDetailsService(userDetailsService); // userDetailsService == InMemoryUserDetailsManager
         return new ProviderManager(daoAuthenticationProvider);
     }
+
+
+
+    //pour permetre d'angular d'envoyer un rqt , en gros qui peut m'envoyer un rqt
+    // gerer la partie cors
+    @Bean
+    CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedHeader("*");
+        //corsConfiguration.setExposedHeaders(List.of("x-auth-token"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**",corsConfiguration);
+        return source ;
+    }
+
 }
